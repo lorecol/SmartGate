@@ -11,4 +11,4 @@
 
 **To upload your changes so anyone can see it, you have to do steps from 3 to 5**
 
-[For a better introduction to Github look for](https://git-scm.com/docs/gittutorial)
+[For a better introduction to Github](https://git-scm.com/docs/gittutorial)
