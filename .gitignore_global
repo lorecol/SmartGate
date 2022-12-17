@@ -1,3 +1,5 @@
-*. Identifier
+*.txt
+*.Identifier
+.DS_Store
 
 https://github.com/lorecol/SmartGate/tree/develop/_MACOSX/
