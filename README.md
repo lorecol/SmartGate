@@ -9,6 +9,6 @@
 4. git commit -m "( for ex. message to display )" &rarr; this allows you to commit your changes
 5. git push &rarr; this allows you to push your committed changes to the repository so anyone can see the new updates
 
-**To upload your changes so anyone can see it, you have to do steps from 3 to 5**
+**To upload your changes so anyone can see it, you have to do steps from 4 to 6**
 
 [For a better introduction to Github](https://git-scm.com/docs/gittutorial)
