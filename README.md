@@ -47,7 +47,9 @@ This is done to transform the cloud points by means of roto-translation transfor
   <img src="/Project_Material/Images/Original_Cloud_Points.jpg" />
 </p>
 
-
+<p align="center">
+  <img src="/Project_Material/Images/Transformed_Cloud_Points.jpg" />
+</p>
 
 ---
 ---
