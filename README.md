@@ -43,7 +43,7 @@ points2rt = inv(H0) * H2 * points2;
 ```
 This is done to transform the cloud points by means of roto-translation transformations
 
-To see the ![Original Cloud points](https://github.com/lorecol/SmartGate/tree/develop/Project_Material/Images/Original_Cloud_Points.jpg?raw=true)
+To see the ![Original Cloud points](/Project_Material/Images/Original_Clous_Points.jpg)
 
 To see the ![Transformed Cloud points](https://github.com/lorecol/SmartGate/tree/develop/Project_Material/Images/Transformed_Cloud_Points.jpg?raw=true)
 
