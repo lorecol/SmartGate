@@ -43,11 +43,11 @@ points2rt = inv(H0) * H2 * points2;
 ```
 This is done to transform the cloud points by means of roto-translation transformations
 
-**Original cloud point**
-![Original Cloud points](/Project_Material/Images/Original_Cloud_Points.jpg)
+<p align="center">
+  <img src="/Project_Material/Images/Original_Cloud_Points.jpg" />
+</p>
 
-**Transformed cloud point**
-![Transformed Cloud points](/Project_Material/Images/Transformed_Cloud_Points.jpg)
+
 
 ---
 ---
