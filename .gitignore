@@ -1,3 +1,7 @@
 *.txt
 .DS_Store
 *.asv
+
+!H0.txt
+!H1.txt
+!H2.txt
