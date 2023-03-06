@@ -2,7 +2,7 @@ clc
 clear all
 close all
 
-%% TO EQUALIZE IMAGES
+%% EQUALIZE IMAGES
 
 fileinfo = dir('Calibration20220922_14_25_02_597/*.png');  % get list of files in current directory
 addpath("Calibration20220922_14_25_02_597")
