@@ -18,7 +18,9 @@ datasets = [
 addpath(genpath(pwd))
 
 % Choose from which dataset import. 
-data_choice = input("Which data set you want to evaluate?\n - 1 for the 1st dataset\n - 2 for the 2nd dataset\n\n Choice: ");
+data_choice = input("Which data set you want to evaluate?\n - 1 for the 1st" + ...
+    " dataset\n - 2 for the 2nd dataset\n\n Choice: ");
+
 if data_choice==1
     mainFolder=datasets(data_choice);
 elseif data_choice==2
@@ -26,7 +28,7 @@ elseif data_choice==2
 else
     error('Dataset not allowed')
 end
-addpath(mainFolder)
+addpath(mainFolder);
 
 %% EQUALIZE CAMERA IMAGES
 
@@ -46,9 +48,10 @@ for i = 1:length(fileinfo)
     title("Cam" + cam(i))
 end
 
-% histeq performs histogram equalization --> for example to enhance the constrast of an intensity image; 
-% it transforms the grayscale image so that the histogram of the output grayscale image (I_eq) has 64 
-% bins and is approximately flat
+% histeq performs histogram equalization --> for example to enhance the 
+% constrast of an intensity image; 
+% it transforms the grayscale image so that the histogram of the output 
+% grayscale image (I_eq) has 64 bins and is approximately flat
 
 %% Evaluate cloud points
 cloud0 =  pcread(fullfile(mainFolder,'004373465147cloud0.ply'));
@@ -61,7 +64,7 @@ H0 = load('H0.txt');
 H1 = load('H1.txt'); 
 H2 = load('H2.txt'); 
 
-Hnorm = [ 0 1 0 0 ; 0 0 1 0 ; 1 0 0 0 ; 0 0 0 1 ]
+Hnorm = [ 0 1 0 0 ; 0 0 1 0 ; 1 0 0 0 ; 0 0 0 1 ];
 
 points0 = [cloud0.Location'; ones(1,length(cloud0.Location))];
 points1 = [cloud1.Location'; ones(1,length(cloud1.Location))]; 
@@ -77,8 +80,10 @@ plot3( cloud0.Location(:,1), cloud0.Location(:,2), cloud0.Location(:,3), '.r','m
 plot3( cloud1.Location(:,1), cloud1.Location(:,2), cloud1.Location(:,3), '.g','markersize', 0.1)
 plot3( cloud2.Location(:,1), cloud2.Location(:,2), cloud2.Location(:,3), '.b','markersize', 0.1)
 title("Original points from the cloud points")
-cameratoolbar % displays a camera toolbar in the current figure that enables interactive manipulation 
-%               of the axes camera and light
+
+% displays a camera toolbar in the current figure that enables interactive
+% manipulation of the axes camera and light
+cameratoolbar
 
 figure, clf, hold on, grid on, axis equal
 % Recall the created function
