@@ -41,7 +41,7 @@ end
 % Show equalized images
 cam = [0 1 2];
 for i = 1:length(fileinfo)
-    figure(i)
+    figure
     imshow(histeq((imread(fileinfo(i).name))*20/2.303))
     title("Cam" + cam(i))
 end
@@ -72,7 +72,7 @@ points1rt = inv(H0) * H1 * points1;
 points2rt = inv(H0) * H2 * points2;
 
 % Plot points in 3D space from the three cloud points
-figure(4), clf, hold on, grid on, axis equal
+figure, clf, hold on, grid on, axis equal
 plot3( cloud0.Location(:,1), cloud0.Location(:,2), cloud0.Location(:,3), '.r','markersize', 0.1)
 plot3( cloud1.Location(:,1), cloud1.Location(:,2), cloud1.Location(:,3), '.g','markersize', 0.1)
 plot3( cloud2.Location(:,1), cloud2.Location(:,2), cloud2.Location(:,3), '.b','markersize', 0.1)
@@ -80,7 +80,7 @@ title("Original points from the cloud points")
 cameratoolbar % displays a camera toolbar in the current figure that enables interactive manipulation 
 %               of the axes camera and light
 
-figure(5), clf, hold on, grid on, axis equal
+figure, clf, hold on, grid on, axis equal
 % Recall the created function
 draw3dReferenceSystems()
 plot3( points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r','markersize', 0.1)
