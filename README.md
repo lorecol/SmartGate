@@ -1,6 +1,6 @@
 # <span style="color: Darkorange;">SmartGate - Project for the course of Robotic Perception and Action</span> 
 
-## <span style="color: orange;">Explanation of Matlab files given by Alessandro Luchetti</span> 
+## <span style="color: orange;">Explanation of Matlab files</span> 
 
 ---
 ---
