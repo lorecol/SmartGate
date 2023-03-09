@@ -1,4 +1,4 @@
-function [] = draw3dReferenceSystems( transformationMatrixToRS , name , scale, width )
+function draw3dReferenceSystems(transformationMatrixToRS, name, scale, width)
 
 try % execute statement
     transformationMatrixToRS;
