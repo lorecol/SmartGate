@@ -1,5 +1,8 @@
 function fileinfo = EqualizeCamImage(mainFolder)
 
+% This function equalizes the images provided by the three ToF cameras to 
+% allow them to be viewed
+
 % Get the list of all png files in current directory
 fileinfo = dir(mainFolder+"/*.png");  
 
@@ -11,9 +14,9 @@ for i = 1:length(fileinfo)
     title("Cam" + cam(i))
 end
 
-% histeq performs histogram equalization --> for example to enhance the 
-% constrast of an intensity image; 
-% it transforms the grayscale image so that the histogram of the output 
-% grayscale image has 64 bins and is approximately flat
+% histeq performs histogram equalization (e.g. to enhance the constrast of 
+% an intensity image); it transforms the grayscale image so that the 
+% histogram of the output grayscale image has 64 bins and is 
+% approximately flat
 
 end

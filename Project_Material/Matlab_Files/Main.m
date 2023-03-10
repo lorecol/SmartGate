@@ -22,8 +22,8 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 %% EVALUATE CLOUD POINTS
 
-EvalCloudPoints(mainFolder);
+[points0rt, points1rt, points2rt] = EvalCloudPoints(mainFolder);
 
 %% DATA FILTERING
 
-% TODO
+DataFiltering(points0rt, points1rt, points2rt);
