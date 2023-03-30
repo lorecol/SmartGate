@@ -7,8 +7,8 @@ close all
 % There is a script that allows the user to choose which of the 2 provided 
 % dataset to evaluate.
 % After the choice, first the images provided by the 3 cameras are
-% equalized, and then the point clouds are evaluated and displayed in a
-% graphical way
+% equalized, then the point clouds are evaluated and displayed in a
+% graphical way, and finally they are filtered
 
 addpath(genpath(pwd))
 
@@ -26,4 +26,6 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 %% DATA FILTERING
 
-DataFiltering(points0rt, points1rt, points2rt);
+remainPtCloud = DataFiltering(points0rt, points1rt, points2rt);
+
+clear points0rt points1rt points2rt

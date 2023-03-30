@@ -24,7 +24,7 @@ H0 = load('H0.txt');
 H1 = load('H1.txt'); 
 H2 = load('H2.txt'); 
 
-Hnorm = [ 0 1 0 0 ; 0 0 1 0 ; 1 0 0 0 ; 0 0 0 1 ];
+Hnorm = [0 1 0 0 ; 0 0 1 0 ; 1 0 0 0 ; 0 0 0 1];
 
 points0 = [ptCloud0.Location'; ones(1,length(ptCloud0.Location))];
 points1 = [ptCloud1.Location'; ones(1,length(ptCloud1.Location))]; 
@@ -50,9 +50,9 @@ cameratoolbar
 figure, clf, hold on, grid on, axis equal
 % Recall the created function
 draw3dReferenceSystems()
-plot3(points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r','markersize', 0.1)
-plot3(points1rt(1,:), points1rt(2,:), points1rt(3,:), '.g','markersize', 0.1)
-plot3(points2rt(1,:), points2rt(2,:), points2rt(3,:), '.b','markersize', 0.1)
+plot3(points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r', 'markersize', 0.1)
+plot3(points1rt(1,:), points1rt(2,:), points1rt(3,:), '.g', 'markersize', 0.1)
+plot3(points2rt(1,:), points2rt(2,:), points2rt(3,:), '.b', 'markersize', 0.1)
 title("Transformed points from the cloud points")
 
 end
