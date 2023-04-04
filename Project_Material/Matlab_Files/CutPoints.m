@@ -47,7 +47,6 @@ MinDistance = 0.7;
 IndexPtCluster = struct;
 
 for i = 1:numClusters
-    l(i) = length(find(labels == i));
     IndexPtCluster(i).Indexes = find(labels == i);
 end
 
