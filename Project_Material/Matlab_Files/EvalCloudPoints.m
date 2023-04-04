@@ -37,9 +37,12 @@ points2rt = inv(H0) * H2 * points2;
 
 % Plot original cloud points
 figure, clf, hold on, grid on, axis equal
-plot3(cloud0.Location(:,1), cloud0.Location(:,2), cloud0.Location(:,3), '.r','markersize', 0.1)
-plot3(cloud1.Location(:,1), cloud1.Location(:,2), cloud1.Location(:,3), '.g','markersize', 0.1)
-plot3(cloud2.Location(:,1), cloud2.Location(:,2), cloud2.Location(:,3), '.b','markersize', 0.1)
+plot3(cloud0.Location(:,1), cloud0.Location(:,2), cloud0.Location(:,3), ...
+    '.r','markersize', 0.1)
+plot3(cloud1.Location(:,1), cloud1.Location(:,2), cloud1.Location(:,3), ...
+    '.g','markersize', 0.1)
+plot3(cloud2.Location(:,1), cloud2.Location(:,2), cloud2.Location(:,3), ...
+    '.b','markersize', 0.1)
 title("Original points from the cloud points")
 
 % Displays a camera toolbar in the current figure that enables interactive
@@ -50,9 +53,12 @@ cameratoolbar
 figure, clf, hold on, grid on, axis equal
 % Recall the created function
 draw3dReferenceSystems()
-plot3(points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r', 'markersize', 0.1)
-plot3(points1rt(1,:), points1rt(2,:), points1rt(3,:), '.g', 'markersize', 0.1)
-plot3(points2rt(1,:), points2rt(2,:), points2rt(3,:), '.b', 'markersize', 0.1)
+plot3(points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r', ...
+    'markersize', 0.1)
+plot3(points1rt(1,:), points1rt(2,:), points1rt(3,:), '.g', ...
+    'markersize', 0.1)
+plot3(points2rt(1,:), points2rt(2,:), points2rt(3,:), '.b', ...
+    'markersize', 0.1)
 title("Transformed points from the cloud points")
 
 end

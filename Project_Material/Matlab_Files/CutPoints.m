@@ -1,9 +1,10 @@
-function remainPtCloud = CutPoints(points0rt, points1rt, points2rt)
+function [remainPtCloud, IndexPtCluster] = CutPoints(points0rt, ...
+    points1rt, points2rt)
 
-% This function fits the unwanted planes of points (such as the floor) to 
-% the point cloud. In this way we are able to cut these planes and keep 
-% only the meaningful points, which are the points that define the shape of
-% the pallet
+% This function fits the unwanted planes of points (such as the ground) to 
+% the point cloud. In this way we are able to cut these planes.
+% Furthermore, the function divides the points into clusters of points in
+% order to complete the filtering operation 
 
 % Create point cloud objects from transformed points
 points0rtCloud = pointCloud(points0rt(:, 1:3), 'Color', 'red');
@@ -20,12 +21,13 @@ translation = [0 0 0];
 tform = rigidtform3d(rotationAngles, translation);
 ptCloudOut = pctransform(ptCloudOut, tform);
 
+% Fit the planes to remove (e.g. ground)
 maxDistance1 = 0.05;
 maxDistance2 = 0.5;
 referenceVector = [0, 0, 1];
 maxAngularDistance = 5;
 
-[model1, inlierIndices, outlierIndices] = pcfitplane(ptCloudOut, ...
+[~, inlierIndices, outlierIndices] = pcfitplane(ptCloudOut, ...
             maxDistance1, referenceVector, maxAngularDistance);
 select(ptCloudOut, inlierIndices);
 remainPtCloud = select(ptCloudOut, outlierIndices);
@@ -33,9 +35,20 @@ remainPtCloud = select(ptCloudOut, outlierIndices);
 roi = [-inf,inf; -1,inf; -inf,inf];
 sampleIndices = findPointsInROI(remainPtCloud, roi);
 
-[model2, inlierIndices, outlierIndices] = pcfitplane(remainPtCloud, ...
+[~, inlierIndices, outlierIndices] = pcfitplane(remainPtCloud, ...
             maxDistance2, SampleIndices = sampleIndices);
 select(remainPtCloud, inlierIndices);
 remainPtCloud = select(remainPtCloud, outlierIndices);
+
+% Segment the point cloud in clusters
+MinDistance = 0.7;
+[labels, numClusters] = pcsegdist(remainPtCloud, MinDistance);
+
+IndexPtCluster = struct;
+
+for i = 1:numClusters
+    l(i) = length(find(labels == i));
+    IndexPtCluster(i).Indexes = find(labels == i);
+end
 
 end

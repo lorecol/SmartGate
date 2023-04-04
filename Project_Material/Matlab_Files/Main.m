@@ -26,6 +26,6 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 %% DATA FILTERING
 
-remainPtCloud = DataFiltering(points0rt, points1rt, points2rt);
+DataFiltering(points0rt, points1rt, points2rt);
 
 clear points0rt points1rt points2rt
