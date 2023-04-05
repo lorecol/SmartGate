@@ -27,6 +27,8 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
 
-pcwrite(PtCloudFilt, "Project_Material/Filtered_Point_Cloud.ply", Encoding = "binary");
+% Save the filtered point cloud into a binary encoded ply file
+pcwrite(PtCloudFilt, "Project_Material/Filtered_Point_Cloud.ply", ...
+    Encoding = "binary");
 
 clear all; clc;
