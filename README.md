@@ -339,3 +339,10 @@ text( originPoint(1) , originPoint(2) , originPoint(3) , name );
 ## <span style="color: orange;">Configure Unity to interact with HoloLens</span> 
 
 [Introduction to the Mixed Reality Toolkit-Set Up Your Project and Use Hand Interaction](https://learn.microsoft.com/en-us/training/modules/learn-mrtk-tutorials/)
+
+---
+## <span style="color: orange;">Import ply files into Unity</span> 
+
+[Pcx - Point Cloud Importer/Renderer for Unity](https://github.com/keijiro/Pcx/releases)
+
+**_It is necessary to import a binary encoded ply file_** 
