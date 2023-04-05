@@ -1,8 +1,8 @@
+%% INITIALIZATION
+
 clc
 clear all
 close all
-
-%% 
 
 % There is a script that allows the user to choose which of the 2 provided 
 % dataset to evaluate.
@@ -12,8 +12,7 @@ close all
 
 addpath(genpath(pwd))
 
-%% CHOOSE THE DATASET TO STUDY
-
+% Choose the dataset to study
 [datasets, mainFolder] = DatasetChoice();
 
 %% EQUALIZE CAMERA IMAGES
@@ -26,6 +25,8 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 %% DATA FILTERING
 
-DataFiltering(points0rt, points1rt, points2rt);
+PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
 
-clear points0rt points1rt points2rt
+pcwrite(PtCloudFilt, "Project_Material/Filtered_Point_Cloud.ply", Encoding = "binary");
+
+clear all; clc;

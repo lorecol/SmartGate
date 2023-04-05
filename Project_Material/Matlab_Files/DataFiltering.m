@@ -1,4 +1,4 @@
-function DataFiltering(points0rt, points1rt, points2rt)
+function PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt)
 
 % This function recalls "CutPoints" function (which cut the cloud points)
 % and plots the new cloud points, thus highlighting the figure of the 
@@ -13,11 +13,14 @@ points2rt = transpose(points2rt);
 [remainPtCloud, IndexPtCluster] = CutPoints(points0rt, points1rt, ...
     points2rt);
 
+% Define filtered point cloud
+PtCloudFilt = select(remainPtCloud, IndexPtCluster(1).Indexes);
+
 % Remaining point cloud after having canceled unwanted portions
 cameratoolbar
 draw3dReferenceSystems()
 figure, clf, hold on, grid on, axis equal
-pcshow(select(remainPtCloud, IndexPtCluster(1).Indexes))
+pcshow(PtCloudFilt)
 axis on
 xlabel('X');
 ylabel('Y');
