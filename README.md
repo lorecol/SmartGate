@@ -72,6 +72,9 @@ clear all; clc;
 ```Matlab
 function [datasets, mainFolder] = DatasetChoice()
 
+% This function allows the user to choose from the available datasets. The
+% chosen dataset is then processed
+
 % Datasets to choose from. They have to be inside the "Datasets" folder
 datasets = [
     "Project_Material/Datasets/Calibration20220922_14_23_47_135", ...
@@ -82,10 +85,11 @@ datasets = [
 data_choice = input("Which data set you want to evaluate?\n - 1 for the 1st" + ...
     " dataset\n - 2 for the 2nd dataset\n\n Choice: ");
 
-if data_choice==1
-    mainFolder=datasets(data_choice);
-elseif data_choice==2
-    mainFolder=datasets(data_choice);
+% Allow the choice
+if data_choice == 1
+    mainFolder = datasets(data_choice);
+elseif data_choice == 2
+    mainFolder = datasets(data_choice);
 else
     error('Dataset not allowed')
 end
@@ -98,6 +102,9 @@ end
 ```Matlab
 function fileinfo = EqualizeCamImage(mainFolder)
 
+% This function equalizes the images provided by the three ToF cameras to 
+% allow them to be viewed
+
 % Get the list of all png files in current directory
 fileinfo = dir(mainFolder+"/*.png");  
 
@@ -109,10 +116,10 @@ for i = 1:length(fileinfo)
     title("Cam" + cam(i))
 end
 
-% histeq performs histogram equalization --> for example to enhance the 
-% constrast of an intensity image; 
-% it transforms the grayscale image so that the histogram of the output 
-% grayscale image has 64 bins and is approximately flat
+% histeq performs histogram equalization (e.g. to enhance the constrast of 
+% an intensity image); it transforms the grayscale image so that the 
+% histogram of the output grayscale image has 64 bins and is 
+% approximately flat
 
 end
 ```
@@ -120,61 +127,167 @@ end
 ---
 #### 3. **_EvalCloudPoints_** function:
 ```Matlab
-function EvalCloudPoints(mainFolder)
+function [points0rt, points1rt, points2rt] = EvalCloudPoints(mainFolder)
 
+% This function reads and shows the original cloud points coming from the 3
+% cameras. Then it pre-process them (removing the noise and downsampling),
+% references them w.r.t. cam0 frame and finally displays the transformed 
+% cloud points
+
+% Read the original cloud points
 cloud0 =  pcread(fullfile(mainFolder,'004373465147cloud0.ply'));
 cloud1 =  pcread(fullfile(mainFolder,'007086770647cloud0.ply'));
 cloud2 =  pcread(fullfile(mainFolder,'018408745047cloud0.ply'));
+ 
+% Remove the noise
+ptCloud0 = pcdenoise(cloud0, "Threshold", 0.5);
+ptCloud1 = pcdenoise(cloud1, "Threshold", 0.5);
+ptCloud2 = pcdenoise(cloud2, "Threshold", 0.5);
+% Downsample the cloud points
+ptCloud0 = pcdownsample(ptCloud0, "nonuniformGridSample", 12);
+ptCloud1 = pcdownsample(ptCloud1, "nonuniformGridSample", 12);
+ptCloud2 = pcdownsample(ptCloud2, "nonuniformGridSample", 12);
 
+% Load the transformation matrices associated to the 3 cameras
 H0 = load('H0.txt'); 
 H1 = load('H1.txt'); 
 H2 = load('H2.txt'); 
 
-Hnorm = [ 0 1 0 0 ; 0 0 1 0 ; 1 0 0 0 ; 0 0 0 1 ];
+Hnorm = [0 1 0 0 ; 0 0 1 0 ; 1 0 0 0 ; 0 0 0 1];
 
-points0 = [cloud0.Location'; ones(1,length(cloud0.Location))];
-points1 = [cloud1.Location'; ones(1,length(cloud1.Location))]; 
-points2 = [cloud2.Location'; ones(1,length(cloud2.Location))]; 
+points0 = [ptCloud0.Location'; ones(1,length(ptCloud0.Location))];
+points1 = [ptCloud1.Location'; ones(1,length(ptCloud1.Location))]; 
+points2 = [ptCloud2.Location'; ones(1,length(ptCloud2.Location))]; 
 
+% Reference points w.r.t. cam0 system
 points0rt = points0;
 points1rt = inv(H0) * H1 * points1;
 points2rt = inv(H0) * H2 * points2;
 
-% Plot points in 3D space from the three cloud points
+% Plot original cloud points
 figure, clf, hold on, grid on, axis equal
-plot3( cloud0.Location(:,1), cloud0.Location(:,2), cloud0.Location(:,3), '.r','markersize', 0.1)
-plot3( cloud1.Location(:,1), cloud1.Location(:,2), cloud1.Location(:,3), '.g','markersize', 0.1)
-plot3( cloud2.Location(:,1), cloud2.Location(:,2), cloud2.Location(:,3), '.b','markersize', 0.1)
+plot3(cloud0.Location(:,1), cloud0.Location(:,2), cloud0.Location(:,3), ...
+    '.r','markersize', 0.1)
+plot3(cloud1.Location(:,1), cloud1.Location(:,2), cloud1.Location(:,3), ...
+    '.g','markersize', 0.1)
+plot3(cloud2.Location(:,1), cloud2.Location(:,2), cloud2.Location(:,3), ...
+    '.b','markersize', 0.1)
 title("Original points from the cloud points")
-
-% Assign the variables to the "main" file workspace
-assignin('base', 'cloud0', cloud0);
-assignin('base', 'cloud1', cloud1);
-assignin('base', 'cloud2', cloud2);
-assignin('base', 'points0', points0);
-assignin('base', 'points1', points1);
-assignin('base', 'points2', points2);
-assignin('base', 'points0rt', points0rt);
-assignin('base', 'points1rt', points1rt);
-assignin('base', 'points2rt', points0rt);
 
 % Displays a camera toolbar in the current figure that enables interactive
 % manipulation of the axes camera and light
 cameratoolbar
 
+% Plot pre-processed and transformed cloud points
 figure, clf, hold on, grid on, axis equal
 % Recall the created function
 draw3dReferenceSystems()
-plot3( points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r','markersize', 0.1)
-plot3( points1rt(1,:), points1rt(2,:), points1rt(3,:), '.g','markersize', 0.1)
-plot3( points2rt(1,:), points2rt(2,:), points2rt(3,:), '.b','markersize', 0.1)
+plot3(points0rt(1,:), points0rt(2,:), points0rt(3,:), '.r', ...
+    'markersize', 0.1)
+plot3(points1rt(1,:), points1rt(2,:), points1rt(3,:), '.g', ...
+    'markersize', 0.1)
+plot3(points2rt(1,:), points2rt(2,:), points2rt(3,:), '.b', ...
+    'markersize', 0.1)
 title("Transformed points from the cloud points")
 
 end
 ```
 ---
 ---
-#### 4. **_draw3dReferenceSystems_** function:
+#### 4. **_dataFiltering_** function:
+```Matlab
+function PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt)
+
+% This function recalls "CutPoints" function (which cut the cloud points)
+% and plots the new cloud points, thus highlighting the figure of the 
+% pallet
+
+% Transpose to have the coordinates of the points as columns
+points0rt = transpose(points0rt);
+points1rt = transpose(points1rt);
+points2rt = transpose(points2rt);
+
+% Cut the points to highlight the pallet object - METHOD 1
+[remainPtCloud, IndexPtCluster] = CutPoints(points0rt, points1rt, ...
+    points2rt);
+
+% Define filtered point cloud
+PtCloudFilt = select(remainPtCloud, IndexPtCluster(1).Indexes);
+
+% Remaining point cloud after having canceled unwanted portions
+cameratoolbar
+draw3dReferenceSystems()
+figure, clf, hold on, grid on, axis equal
+pcshow(PtCloudFilt)
+axis on
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
+title("Filtered points from the cloud points")
+
+end
+```
+---
+---
+#### 5. **_CutPoints_** function:
+```Matlab
+function [remainPtCloud, IndexPtCluster] = CutPoints(points0rt, ...
+    points1rt, points2rt)
+
+% This function fits the unwanted planes of points (such as the ground) to 
+% the point cloud. In this way we are able to cut these planes.
+% Furthermore, the function divides the points into clusters of points in
+% order to complete the filtering operation 
+
+% Create point cloud objects from transformed points
+points0rtCloud = pointCloud(points0rt(:, 1:3), 'Color', 'red');
+points1rtCloud = pointCloud(points1rt(:, 1:3), 'Color', 'green');
+points2rtCloud = pointCloud(points2rt(:, 1:3), 'Color', 'blue');
+
+% Concatenate the point clouds
+ptClouds = [points0rtCloud; points1rtCloud; points2rtCloud];
+ptCloudOut = pccat(ptClouds);
+
+% Rotate the point cloud to improve the point of view
+rotationAngles = [90 -90 0];
+translation = [0 0 0];
+tform = rigidtform3d(rotationAngles, translation);
+ptCloudOut = pctransform(ptCloudOut, tform);
+
+% Fit the planes to remove (e.g. ground)
+maxDistance1 = 0.05;
+maxDistance2 = 0.5;
+referenceVector = [0, 0, 1];
+maxAngularDistance = 5;
+
+[~, inlierIndices, outlierIndices] = pcfitplane(ptCloudOut, ...
+            maxDistance1, referenceVector, maxAngularDistance);
+select(ptCloudOut, inlierIndices);
+remainPtCloud = select(ptCloudOut, outlierIndices);
+
+roi = [-inf,inf; -1,inf; -inf,inf];
+sampleIndices = findPointsInROI(remainPtCloud, roi);
+
+[~, inlierIndices, outlierIndices] = pcfitplane(remainPtCloud, ...
+            maxDistance2, SampleIndices = sampleIndices);
+select(remainPtCloud, inlierIndices);
+remainPtCloud = select(remainPtCloud, outlierIndices);
+
+% Segment the point cloud in clusters
+MinDistance = 0.7;
+[labels, numClusters] = pcsegdist(remainPtCloud, MinDistance);
+
+IndexPtCluster = struct;
+
+for i = 1:numClusters
+    IndexPtCluster(i).Indexes = find(labels == i);
+end
+
+end
+```
+---
+---
+#### 6. **_draw3dReferenceSystems_** function:
 ```Matlab
 function draw3dReferenceSystems(transformationMatrixToRS, name, scale, width)
 
@@ -223,112 +336,3 @@ text( originPoint(1)+zDirVector(1) , originPoint(2)+zDirVector(2) , originPoint(
 
 text( originPoint(1) , originPoint(2) , originPoint(3) , name );
 ```
-
-<!---
-```Matlab
-cloud0 =  pcread(fullfile(mainFolder, '004373465147cloud0.ply'));
-cloud1 =  pcread(fullfile(mainFolder, '007086770647cloud0.ply'));
-cloud2 =  pcread(fullfile(mainFolder, '018408745047cloud0.ply'));
-``` 
-This allows to read the point cloud from the specified .ply file returning a pointCloud object, which is composed by:
-   - Location: position of the points in 3D coordinate space
-   - Color: set the color of points in point cloud
-   - Normal: specify the normal vector with respect to each point in the point cloud
-   - Intensity: grayscale intensities at each point
-   - Count: total number of points in the point cloud
-   - XLimits, YLimits, ZLimits: range of coordinates along the 3 axes
-
-```Matlab
-H0 = load('H0.txt'); 
-H1 = load('H1.txt'); 
-H2 = load('H2.txt'); 
-```
-H0, H1, H2 are the roto-translation matrices of the three cameras:
-   - H0 &rarr; frontal camera
-   - H1 &rarr; left lateral camera
-   - H2 &rarr; right lateral camera
-
-```Matlab
-points0 = [cloud0.Location'; ones(1, length(cloud0.Location))];
-points1 = [cloud1.Location'; ones(1,length(cloud1.Location))]; 
-points2 = [cloud2.Location'; ones(1,length(cloud2.Location))]; 
-```
-This creates a 4x4 matrix where the first 3 rows are respectively the x, y and z coordinates of the points in the specified point cloud, while the last row is full of ones
-
-```Matlab
-points0rt = points0;
-points1rt = inv(H0) * H1 * points1;
-points2rt = inv(H0) * H2 * points2;
-```
-This is done to transform the cloud points by means of roto-translation transformations
-
-<p align="center">
-  <img src="/Project_Material/Images/Dataset_Calibration20220922_14_23_47_135/Original_Cloud_Points.jpg" />
-</p>
-
-<p align="center">
-  <img src="/Project_Material/Images/Dataset_Calibration20220922_14_23_47_135/Transformed_Cloud_Points.jpg" />
-</p>
-
----
----
-
-### 2. Function ``` draw3dReferenceSystems( transformationMatrixToRS , name , scale, width ) ```:
-
-This function is used in order to add in a 3D plot a cartesian reference system defined by the three axes x, y and z
-
-```Matlab
-try 
-    transformationMatrixToRS;
-catch 
-    transformationMatrixToRS = eye(4); 
-end
-```
-This defines **transformationMatrixToRS** as a 4x4 identity matrix
-
-```Matlab
-try
-    name;
-catch
-    name = 'reference frame';
-end
-```
-This defines the **name** of the reference system as **reference frame**
-
-```Matlab
-try
-    scale;
-catch
-    scale = 1 ;
-end
-```
-This sets the **scale** of the reference system to **1**
-
-```Matlab
-try
-    width;
-catch
-    width = 3;
-end
-```
-This sets the **width** of the arrow that define the three axes of the ref. system to **3**
-
-```Matlab
-originPoint = transformationMatrixToRS * [ 0 0 0 1 ]';
-
-xDirVector  = ( transformationMatrixToRS * [ 1 0 0 1 ]' - originPoint).* scale;
-yDirVector  = ( transformationMatrixToRS * [ 0 1 0 1 ]'  - originPoint).* scale;
-zDirVector  = ( transformationMatrixToRS * [ 0 0 1 1 ]' - originPoint).* scale;
-```
-This specifies the directions in which the three cartesian axes x, y, z are defined:
-   - x &rarr; {1, 0, 0}
-   - y &rarr; {0, 1, 0}
-   - z &rarr; {0, 0, 1}
-
-```Matlab
-px = quiver3( originPoint(1) , originPoint(2) , originPoint(3) , xDirVector(1) , xDirVector(2) , xDirVector(3) , 'r' , 'LineWidth', width);
-py = quiver3( originPoint(1) , originPoint(2) , originPoint(3) , yDirVector(1) , yDirVector(2) , yDirVector(3) , 'g' , 'LineWidth', width);
-pz = quiver3( originPoint(1) , originPoint(2) , originPoint(3) , zDirVector(1) , zDirVector(2) , zDirVector(3) , 'b' , 'LineWidth', width);
-```
-In general **_quiver3(X, Y, Z, U, V, W)_** plots arrows with directional components U, V, and W at the Cartesian coordinates specified by X, Y, and Z
--->
