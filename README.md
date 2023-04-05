@@ -9,8 +9,21 @@ TO BE UPDATED
 
 ### Main file:
 ```Matlab
-%% CHOOSE THE DATASET TO STUDY
+%% INITIALIZATION
 
+clc
+clear all
+close all
+
+% There is a script that allows the user to choose which of the 2 provided 
+% dataset to evaluate.
+% After the choice, first the images provided by the 3 cameras are
+% equalized, then the point clouds are evaluated and displayed in a
+% graphical way, and finally they are filtered
+
+addpath(genpath(pwd))
+
+% Choose the dataset to study
 [datasets, mainFolder] = DatasetChoice();
 
 %% EQUALIZE CAMERA IMAGES
@@ -19,7 +32,17 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 %% EVALUATE CLOUD POINTS
 
-EvalCloudPoints(mainFolder);
+[points0rt, points1rt, points2rt] = EvalCloudPoints(mainFolder);
+
+%% DATA FILTERING
+
+PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
+
+% Save the filtered point cloud into a binary encoded ply file
+pcwrite(PtCloudFilt, "Project_Material/Filtered_Point_Cloud.ply", ...
+    Encoding = "binary");
+
+clear all; clc;
 ```
 
 **_Functions:_**
@@ -28,11 +51,19 @@ EvalCloudPoints(mainFolder);
    - datasets: the path of all datasets
    - mainFolder: the path of the chosen dataset
 
- - **_EqualizeCamImage(mainFolder)_** equalizes the images provided by the three cameras and display them. It returns:
+ - **_fileinfo = EqualizeCamImage(mainFolder)_** equalizes the images provided by the three cameras and display them. It returns:
    - fileinfo: a structure with, among other things, the name of the images
 
- - **_EvalCloudPoints(mainFolder)_** reads the cloud points from the chosen dataset, performs system transformation and display the original and transformed cloud points.
+ - **_[points0rt, points1rt, points2rt] = EvalCloudPoints(mainFolder)_** reads the cloud points from the chosen dataset, performs system transformation in order to reference all w.r.t. camera 0 and displays the original and transformed cloud points. It returns:
+   - points0rt, points1rt, points2rt: the points provided by the three cameras that have been referenced w.r.t. camera 0
+
+ - **_PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt)_** reads the transformed points and recalls a function named **_CutPoints()_** that filters the point cloud. It also plots the filered point cloud. It returns:
+   - PtCloudFilt: filtered point cloud  
  
+ - **_[remainPtCloud, IndexPtCluster] = CutPoints(points0rt, points1rt, points2rt)_** filters the point cloud fitting the unwanted planes such as the ground to the point cloud. Furthermore, it completes the filtering collecting the points in clusters and removing the unwanted clusters. It returns:
+   - remainPtCloud: point cloud after plane fitting filtering
+   - IndexPtCluster: struct containing the clusters of points
+
  - **_draw3dReferenceSystems(transformationMatrixToRS, name, scale, width)_** is used in order to add in a 3D plot a cartesian reference system defined by the three axes x, y and z.
 
 ---
