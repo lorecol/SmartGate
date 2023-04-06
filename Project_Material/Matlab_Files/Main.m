@@ -13,22 +13,40 @@ close all
 addpath(genpath(pwd))
 
 % Choose the dataset to study
-[datasets, mainFolder] = DatasetChoice();
+% [datasets, mainFolder] = DatasetChoice();
 
 %% EQUALIZE CAMERA IMAGES
 
-fileinfo = EqualizeCamImage(mainFolder);
+% fileinfo = EqualizeCamImage(mainFolder);
 
 %% EVALUATE CLOUD POINTS
 
-[points0rt, points1rt, points2rt] = EvalCloudPoints(mainFolder);
+% [points0rt, points1rt, points2rt] = EvalCloudPoints(mainFolder);
 
 %% DATA FILTERING
 
-PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
+% PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
 
 % Save the filtered point cloud into a binary encoded ply file
-pcwrite(PtCloudFilt, "Project_Material/Filtered_Point_Cloud.ply", ...
-    Encoding = "binary");
+% pcwrite(PtCloudFilt, "Project_Material/Filtered_PointCloud/Filtered_Point_Cloud.ply", ...
+%     Encoding = "binary");
 
-clear all; clc;
+% clear all; clc;
+
+%% CAMERA CALIBRATION
+
+% Define images to process
+imageFileNames = {...
+    'Project_Material\Calibration\20230406_072551_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_072811_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_072829_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_073111_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_073127_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_073139_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_073156_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_073212_HoloLens.jpg',...
+    'Project_Material\Calibration\20230406_073225_HoloLens.jpg',...
+    };
+
+[cameraParams, imagesUsed, estimationErrors] = ...
+    CameraCalibration(imageFileNames);

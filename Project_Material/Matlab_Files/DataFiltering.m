@@ -16,6 +16,12 @@ points2rt = transpose(points2rt);
 % Define filtered point cloud
 PtCloudFilt = select(remainPtCloud, IndexPtCluster(1).Indexes);
 
+% Rotate the point cloud in the original configuration
+rotationAngles = [-90 90 0];
+translation = [0 0 0];
+tform = rigidtform3d(rotationAngles, translation);
+PtCloudFilt = pctransform(PtCloudFilt, tform);
+
 % Remaining point cloud after having canceled unwanted portions
 cameratoolbar
 draw3dReferenceSystems()
