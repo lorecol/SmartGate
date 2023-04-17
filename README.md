@@ -1,14 +1,29 @@
-# SmartGate - Project for the course of Robotic Perception and Action  
-## Basic Introduction to Github
+# SMARTGATE PROJECT - PYTHON VERSION
+This folder contains all the useful python codes to implement
+the smartgate project
 
-### Commands to know
-1. git clone git@github.com:lorecol/SmartGate.git &rarr; this allows to clone this repository in your local pc
-2. git checkout develop &rarr; this allows you to change branch, going from _main_ to _develop_ where we will work
-2. git pull &rarr; this allows to incorporate changes made by others into your local copy of the repository
-3. git add . &rarr; this allows to upload your personal changes made on files inside the repository and prepares it to be uploaded
-4. git commit -m "( for ex. message to display )" &rarr; this allows you to commit your changes
-5. git push &rarr; this allows you to push your committed changes to the repository so anyone can see the new updates
+## How to use
 
-**To upload your changes so anyone can see it, you have to do steps from 4 to 6**
+1. Clone the repository running the following line:
+```bash
+git clone 
+```
 
-[For a better introduction to Github](https://git-scm.com/docs/gittutorial)
+2. Create a virtual environment:
+```bash
+python3 -m venv venv 
+```
+
+3. Activate virtual environment:
+```bash
+source venv/bin/activate 
+```
+
+4. Install requirements:
+```bash
+pip install -r requirements.txt 
+```
+
+| Command  | Description     |
+|----------|-----------------|
+| `--plot` | Plot the images |
