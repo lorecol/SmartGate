@@ -3,6 +3,7 @@ import os
 
 import cv2 as cv
 import matplotlib.pyplot as plt
+import numpy as np
 import open3d as o3d
 
 from PointCloud.src.imgequalization.imgequ import *
@@ -12,6 +13,14 @@ DATASETS = ["Calibration20220922_14_23_47_135", "Calibration20220922_14_25_02_59
 
 
 def display_inlier_outlier(cloud, ind):
+    """
+    Function that show the point cloud inlier and outlier
+     (that will be removed)
+
+    :param cloud: point cloud data
+    :param ind: point cloud indexes
+    :return: null, it
+    """
     inlier_cloud = cloud.select_by_index(ind)
     outlier_cloud = cloud.select_by_index(ind, invert=True)
 
@@ -23,7 +32,7 @@ def display_inlier_outlier(cloud, ind):
 
 def main(
         dataset: int,
-        plot: int
+        plot: bool
 ) -> None:
     ## DATASET CHOICE
     print("DATASET CHOICE")
@@ -63,7 +72,7 @@ def main(
     ## POINT CLOUD
     # http://www.open3d.org/docs/release/tutorial/geometry/pointcloud.html
     print("POINT CLOUD OPERATIONS")
-    # Read point cloud
+    # Read point cloud and colouring them
     pcd0 = o3d.io.read_point_cloud(mainFolder + "/" + "004373465147cloud0.ply")
     pcd0.paint_uniform_color([1, 0, 0])
     pcd1 = o3d.io.read_point_cloud(mainFolder + "/" + "007086770647cloud0.ply")
@@ -83,8 +92,15 @@ def main(
 
     pcd_all = [pcd0_down, pcd1_down, pcd2_down]
 
-    # Load the transoformation matrices
+    # ?? Hnorm
+    Hnorm = [[0, 1, 0, 0],
+             [0, 0, 1, 0],
+             [1, 0, 0, 0],
+             [0, 0, 0, 1]]
+
+    # Load the transformation matrices
     H0 = np.loadtxt(CURDIR + "/H0.txt", dtype=float)
+    print(H0)
     H1 = np.loadtxt(CURDIR + "/H1.txt", dtype=float)
     H2 = np.loadtxt(CURDIR + "/H2.txt", dtype=float)
 
@@ -104,9 +120,9 @@ def main(
     ## STATISTICAL OUTLIER REMOVAL
     # removes points that are further away from their neighbors
     # compared to the average for the point cloud
-    pcd, ind = pcd_combined.remove_statistical_outlier(nb_neighbors=30, std_ratio=0.7)
+    pcd, ind = pcd_combined_down.remove_statistical_outlier(nb_neighbors=30, std_ratio=0.7)
     # Display points removed
-    if plot: display_inlier_outlier(pcd_combined, ind)
+    if plot: display_inlier_outlier(pcd_combined_down, ind)
 
     ## PLANE SEGMENTATION
     # Used in order to remove ground and walls
@@ -144,11 +160,15 @@ def main(
     pcd = pcd.select_by_index(indexes)
     # Save the final point cloud
     o3d.io.write_point_cloud("Out/out.ply", pcd)
-    #Visualize the point cloud
+    # Visualize the point cloud
     if plot: o3d.visualization.draw_geometries([pcd, mesh_frame])
 
     ## ARUCO DETECTION
+    # https://mecaruco2.readthedocs.io/en/latest/notebooks_rst/Aruco/aruco_basics.html
     print("ARUCO DETECTION")
+    camera_matrix =[[388.198, 0.0, 253.270], [0.0, 389.033, 213.934], [0.0, 0.0, 1.0]]
+    dist_coeff = [[0.126, -0.329, 0.111, -0.001, -0.002]]
+
     frame = cv.imread(CURDIR + "/Out/Cam0norm.png")
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_ARUCO_ORIGINAL)
@@ -166,16 +186,31 @@ def main(
         plt.legend()
         plt.show()
 
+    # Extrapolating aruco coordinate and useful data
+    corners_all = np.array(c[0] for c in corners)
+
+    corner = corners[0][0][0]
+    x = corner[0]
+    y = corner[1]
+    print(f"First corner coordinates: [{x}, {y}]")
+
+    # Build KDTree from point cloud
+    pcd_tree = o3d.geometry.KDTreeFlann(pcd)
+    [k, idx, _] = pcd_tree.search_knn_vector_3d([x, y, 0], 10)
+    np.asarray(pcd.colors)[idx[1:], :] = [1, 0, 0]
+    o3d.visualization.draw_geometries([pcd, mesh_frame])
+    # http: // www.open3d.org / docs / latest / tutorial / Basic / kdtree.html
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--dataset", required=True, help="The dataset to choose from", type=int)
-    parser.add_argument("--plot", required=False, help="View all the plots", default=True, type=bool)
+    parser.add_argument("-p", required=False, help="View all the plots", default=False, action="store_true")
 
     args = parser.parse_args()
 
     main(
-        args.dataset,
-        args.plot
+        dataset=args.dataset,
+        plot=args.p
     )
