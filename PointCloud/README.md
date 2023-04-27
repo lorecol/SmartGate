@@ -1,8 +1,17 @@
 # POINT CLOUD
-TODO: Brief summary
+This folder contains all the useful python code to manage point cloud. 
+Is principally based on the package [Open3D package](http://www.open3d.org/docs/release/index.html).\
+Summarizing what the code does:
+- Load the point cloud and the image from a given dataset of point cloud each one composed of three point cloud from
+3 tof camera
+- Equalize the image
+- Perform a downsampling process
+- Make a single combined point cloud through the transformation matrices of the cameras
+- Remove statistical outliers
+- Remove planes such ground and walls
+- Perform a clustering leading to the final pallet point cloud 
 
-
-
+![](Out/final_plc.png)
 ## How to use
 
 To run the code move the terminal in _SmartGate/PointCloud_ with _cd_ command. \

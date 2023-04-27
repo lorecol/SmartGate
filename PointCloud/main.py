@@ -166,8 +166,6 @@ def main(
     ## ARUCO DETECTION
     # https://mecaruco2.readthedocs.io/en/latest/notebooks_rst/Aruco/aruco_basics.html
     print("ARUCO DETECTION")
-    camera_matrix =[[388.198, 0.0, 253.270], [0.0, 389.033, 213.934], [0.0, 0.0, 1.0]]
-    dist_coeff = [[0.126, -0.329, 0.111, -0.001, -0.002]]
 
     frame = cv.imread(CURDIR + "/Out/Cam0norm.png")
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)

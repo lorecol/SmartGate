@@ -22,7 +22,8 @@ def cumsum(a):
     return np.array(b)
 
 def equalizethis(img):
-    img = np.asarray(img)
+    img = np.asarray(img)*20/2.303
+    img = np.array(list(map(np.int_, img)))
     flat = img.flatten()
 
     hist = get_histogram(flat, 65536)
