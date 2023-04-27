@@ -8,7 +8,7 @@ find the relative position and rotation with respect to a given marker id
 
 ## How to use:
 - Import in the folder _"calib_data/"_ the calibration _data.json_ file computed following the [Calibration instruction](../Calibration/README.md)
- Run the code with the following command:
+- Run the code with the following command:
     
     | Argument        | Description                                              | Required | Default |
     |-----------------|----------------------------------------------------------|----------|---------|

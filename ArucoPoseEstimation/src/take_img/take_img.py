@@ -1,10 +1,15 @@
 # importing the python open cv library
 import cv2
 
-# intialize the webcam and pass a constant which is 0
+"""
+This script is useful to take a picture of the camera pressing spacebar or esc for exiting.
+It will save an image in the running directory of the script.
+"""
+
+# Intialize the webcam and pass a constant which is 0
 cam = cv2.VideoCapture(0)
 
-# title of the app
+# Title of the app
 cv2.namedWindow('python webcam screenshot app')
 
 # let's assume the number of images gotten is 0

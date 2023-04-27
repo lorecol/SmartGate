@@ -212,3 +212,5 @@ if __name__ == "__main__":
         dataset=args.dataset,
         plot=args.p
     )
+
+    # python main.py --dataset 1 -p
