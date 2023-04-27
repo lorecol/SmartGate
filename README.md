@@ -42,4 +42,4 @@ python -m venv venv
 pip install -r requirements.txt 
 ```
 
-6. Follow the README file of [PointCloud](PointCloud/README.md)
+6. Follow the README file of [PointCloud](PointCloud/README.md) or [ArucoPoseEstimation](ArucoPoseEstimation/README.md) or [Calibration](Calibration/README.md)
