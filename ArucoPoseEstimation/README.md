@@ -22,5 +22,7 @@ find the relative position and rotation with respect to a given marker id
     ```bash
     python ArucoPoseEstimation/main.py --calib-path calib_data/data.npz  --img-path opencv_frame_0.png --from-id 12 --to-id 0
     ```
+  <img src="output/out_img.png" width="70%">
+
 
     

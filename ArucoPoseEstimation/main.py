@@ -115,6 +115,17 @@ def main(
             json.dump(data, f)
 
     # Showing the resulting image and exit procedures
+    h, w, _ = frame.shape
+    print(f"h:{h}, w:{w}")
+    frame = cv.putText(frame,
+                       f"Distance: {round(distance,2)}",
+                       (50, 50),
+                       cv.FONT_HERSHEY_PLAIN,
+                       2,
+                       (0,0,255),
+                       2,
+                       cv.LINE_AA)
+    cv.imwrite("output/out_img.png", frame)
     cv.imshow("frame", frame)
     cv.waitKey()
     cv.destroyAllWindows()
