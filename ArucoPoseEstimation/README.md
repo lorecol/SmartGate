@@ -2,7 +2,7 @@
 This folder contain all the useful code to perform an aruco pose estimation
 is principally based on the OpenCV official guide for [Aruco detection](https://docs.opencv.org/4.7.0/d5/dae/tutorial_aruco_detection.html)\
 
-It tries to find the pose of at least two aruco ids specified by the user and 
+It tries to find the pose of at least two aruco markers ids specified by the user and 
 find the relative position and rotation with respect to a given marker id
 
 
@@ -20,9 +20,11 @@ find the relative position and rotation with respect to a given marker id
     
     E.g. you can run the code with the following command:
     ```bash
-    python ArucoPoseEstimation/main.py --calib-path calib_data/data.npz  --img-path opencv_frame_0.png --from-id 12 --to-id 0
+    python ArucoPoseEstimation/main.py --marker-size 5 --calib-path calib_data/data.npz  --img-path opencv_frame_0.png --from-id 12 --to-id 0
     ```
   <img src="output/out_img.png" width="70%">
+
+- The code will calculate the distance of the two markers and will save the relative translation and rotation vectors into _"output/"_ directory as a _json_ file
 
 
     

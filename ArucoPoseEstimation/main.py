@@ -1,8 +1,9 @@
 import argparse
-
-import numpy as np
 import json
+
 import cv2 as cv
+import numpy as np
+
 
 def inversePerspective(rvec, tvec):
     R, _ = cv.Rodrigues(rvec)
@@ -10,6 +11,7 @@ def inversePerspective(rvec, tvec):
     invTvec = np.dot(R, np.matrix(-tvec))
     invRvec, _ = cv.Rodrigues(R)
     return invRvec, invTvec
+
 
 def relativePosition(rvec1, tvec1, rvec2, tvec2):
     """
@@ -29,27 +31,30 @@ def relativePosition(rvec1, tvec1, rvec2, tvec2):
     composedRvec = composedRvec.reshape((3, 1))
     composedTvec = composedTvec.reshape((3, 1))
     return composedRvec, composedTvec
+
+
 def main(
-        calib_data_path:str,
-        marker_size:int,
-        image:str,
-        from_id:int,
-        to_id:int
-)->None:
+        calib_data_path: str,
+        marker_size: int,
+        image: str,
+        from_id: int,
+        to_id: int
+) -> None:
     """
     :param calib_data_path:  Calibration data path
     :param marker_size:  Markers size [cm]
     :param image: Image path to which perform the aruco pose
+    :param from_id: Marker id relative to which is detected the second marker
+    :param to_id: Marker id which we have to calculate the pose relative to the first marker id
     :return:
     """
 
     # LOAD CAMERA CALIBRATION PARAMS
-    calib_data = np.load(calib_data_path)
-    print(calib_data.files)
-    cam_mat = calib_data["camMatrix"]
-    dist_coef = calib_data["distCoef"]
-    r_vectors = calib_data["rVector"]
-    t_vectors = calib_data["tVector"]
+    with open(calib_data_path, "r") as read_file:
+        calib_data = json.load(read_file)
+    cam_mat = np.array(calib_data["camera_matrix"])
+    dist_coef = np.array(calib_data["dist_coeff"])
+
 
     # SET COORDINATE SYSTEM in the middle of the aruco
     objPoints = np.array([[-marker_size / 2, marker_size / 2, 0],
@@ -62,13 +67,13 @@ def main(
     # ARUCO DETECTION INITIALIZATION
     param_markers = cv.aruco.DetectorParameters()
     # Marker dictionary, change if necessary
-    marker_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50)
+    marker_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_ARUCO_ORIGINAL)
     # Initialize detector
     detector = cv.aruco.ArucoDetector(marker_dict, param_markers)
     gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     marker_corners, marker_IDs, reject = detector.detectMarkers(gray_frame)
 
-    #Check if there are at least to markers
+    # Check if there are at least to markers
     if marker_IDs.size < 2:
         raise TypeError(f'There are no 2 markers, only {marker_IDs.size} available')
 
@@ -84,12 +89,12 @@ def main(
             nada.append(n)
         total_markers = range(0, marker_IDs.size)
 
-        from_index=np.inf
-        to_index=np.inf
+        from_index = np.inf
+        to_index = np.inf
         # Drawing axes frame
-        for ids, corners,i in zip(marker_IDs, marker_corners, total_markers):
+        for ids, corners, i in zip(marker_IDs, marker_corners, total_markers):
             cv.drawFrameAxes(frame, cam_mat, dist_coef, rvec[i], tvec[i], 1)
-            if ids ==from_id:
+            if ids == from_id:
                 from_index = i
             elif ids == to_id:
                 to_index = i
@@ -100,17 +105,19 @@ def main(
             print("The markers has been found")
 
         # Relative position of marker 2 with respect to marker 1
-        composedRvec, composedTvec = relativePosition(rvec[from_index], tvec[from_index], rvec[to_index], tvec[to_index])
+        composedRvec, composedTvec = relativePosition(rvec[from_index], tvec[from_index], rvec[to_index],
+                                                      tvec[to_index])
         print(f"composedRvec:\n {composedRvec}\n"
               f"composedTvec:\n {composedTvec}")
 
         # Distance of marker 2 from marker 1
-        distance = np.sqrt(composedTvec[0, 0]**2 + composedTvec[1, 0]**2 + composedTvec[2, 0]**2)
-        print(f"The distance of marker {marker_IDs[to_index,0]} from marker {marker_IDs[from_index, 0]} is: {distance}cm")
+        distance = np.sqrt(composedTvec[0, 0] ** 2 + composedTvec[1, 0] ** 2 + composedTvec[2, 0] ** 2)
+        print(
+            f"The distance of marker {marker_IDs[to_index, 0]} from marker {marker_IDs[from_index, 0]} is: {distance}cm")
 
         # Saving the relative position into json file
         data = {"composedRvec": composedRvec.tolist(), "composedTvec": composedTvec.tolist()}
-        jname = f"output/Marker{marker_IDs[to_index,0]}_relative_to{marker_IDs[from_index, 0]}.json"
+        jname = f"output/Marker{marker_IDs[to_index, 0]}_relative_to{marker_IDs[from_index, 0]}.json"
         with open(jname, "w") as f:
             json.dump(data, f)
 
@@ -118,17 +125,19 @@ def main(
     h, w, _ = frame.shape
     print(f"h:{h}, w:{w}")
     frame = cv.putText(frame,
-                       f"Distance: {round(distance,2)}",
+                       f"Distance: {round(distance, 2)}",
                        (50, 50),
                        cv.FONT_HERSHEY_PLAIN,
                        2,
-                       (0,0,255),
+                       (0, 0, 255),
                        2,
                        cv.LINE_AA)
+    frame = cv.resize(frame, (1080, 720))
     cv.imwrite("output/out_img.png", frame)
     cv.imshow("frame", frame)
     cv.waitKey()
     cv.destroyAllWindows()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -147,4 +156,4 @@ if __name__ == "__main__":
         from_id=args.from_id,
         to_id=args.to_id
     )
-    #--calib-path calib_data/data.npz  --img-path opencv_frame_0.png --from-id 12 --to-id 0
+    # --calib-path calib_data/data.json --marker-size 5 --img-path Hololens_calib_photo.jpg --from-id 555 --to-id 444

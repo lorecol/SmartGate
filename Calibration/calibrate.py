@@ -12,24 +12,25 @@ usage:
     calibrate.py [--debug <output path>] [--square_size] [--pattern_width] [--pattern_height] [<image mask>]
 default values:
     --debug:    ./output/
-    --square_size: 1.0
+    --square_size: 3.0
     --pattern_width: 7
     --pattern_height: 5
     <image mask> defaults to data/*.jpg
 '''
-
+# E.g. run with --debug ./output/ --square_size 0.03 --pattern_width 18 --pattern_height 24 CalibImage/*.jpg
 # Python 2/3 compatibility
 from __future__ import print_function
 
-import numpy as np
+import json
+# built-in modules
+import os
+import yaml
+
 import cv2
-import json, yaml
+import numpy as np
 
 # local modules
 from common import splitfn
-
-# built-in modules
-import os
 
 if __name__ == '__main__':
     import sys
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     args, img_mask = getopt.getopt(sys.argv[1:], '', ['debug=', 'square_size=', 'pattern_width=', 'pattern_height='])
     args = dict(args)
     args.setdefault('--debug', './output/')
-    args.setdefault('--square_size', 1.0)
+    args.setdefault('--square_size', 3.0)
     args.setdefault('--pattern_width', 7)
     args.setdefault('--pattern_height', 5)
     if not img_mask:
@@ -99,12 +100,12 @@ if __name__ == '__main__':
         print('ok')
 
     # calculate camera distortion
-    rms, camera_matrix, dist_coefs, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, (w, h), None, None, flags=cv2.CALIB_FIX_K3)
+    rms, camera_matrix, dist_coefs, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, (w, h), None, None,
+                                                                       flags=cv2.CALIB_FIX_K3)
 
     print("\nRMS:", rms)
     print("camera matrix:\n", camera_matrix)
     print("distortion coefficients: ", dist_coefs.ravel())
-
 
     data = {"camera_matrix": camera_matrix.tolist(), "dist_coeff": dist_coefs.tolist(), "height": h, "width": w}
     yname = "data.yaml"
@@ -114,23 +115,21 @@ if __name__ == '__main__':
     with open(jname, "w") as f:
         json.dump(data, f)
 
-
     # undistort the image with the calibration
     print('')
     for img_found in img_names_undistort:
         img = cv2.imread(img_found)
 
-        h,  w = img.shape[:2]
+        h, w = img.shape[:2]
         newcameramtx, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coefs, (w, h), 1, (w, h))
 
         dst = cv2.undistort(img, camera_matrix, dist_coefs, None, newcameramtx)
 
         # crop and save the image
         x, y, w, h = roi
-        dst = dst[y:y+h, x:x+w]
+        dst = dst[y:y + h, x:x + w]
         outfile = img_found + '_undistorted.png'
         print('Undistorted image written to: %s' % outfile)
         cv2.imwrite(outfile, dst)
 
     cv2.destroyAllWindows()
-
