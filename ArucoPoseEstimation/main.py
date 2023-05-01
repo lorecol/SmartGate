@@ -125,7 +125,7 @@ def main(
     h, w, _ = frame.shape
     print(f"h:{h}, w:{w}")
     frame = cv.putText(frame,
-                       f"Distance: {round(distance, 2)}",
+                       f"Distance: {round(distance, 2)} cm",
                        (50, 50),
                        cv.FONT_HERSHEY_PLAIN,
                        2,
@@ -144,8 +144,8 @@ if __name__ == "__main__":
     parser.add_argument("--calib-path", required=True, help="The camera calibration path", type=str)
     parser.add_argument("--marker-size", required=False, help="The marker size [cm]", default=5, type=int)
     parser.add_argument("--img-path", required=True, help="The image path to which perform the aruco pose", type=str)
-    parser.add_argument("--from-id", required=False, help="The 1st marker ", default=12, type=int),
-    parser.add_argument("--to-id", required=False, help="The 2nd marker ", default=0, type=int)
+    parser.add_argument("--from-id", required=False, help="The 1st marker ", default=555, type=int),
+    parser.add_argument("--to-id", required=False, help="The 2nd marker ", default=444, type=int)
 
     args = parser.parse_args()
 

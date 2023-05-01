@@ -11,12 +11,12 @@ For more information refers to [OpenCV Camera Calibration](https://docs.opencv.o
   ```
   If necessary of you have a different type of chessboard you can change the following parameters:
   
-    | Argument            | Description                                        | Required | Default |
-    |---------------------|----------------------------------------------------|----------|---------|
-    | `--debug`           | It enable debug and create an _"/output/"_: folder | `False`  | `False` |
-    | `--square_size`     | Chessboard squares size in cm                      | `False`  | `3`     |
-    | `--pattern_width`   | Chessboard pattern width  cm                       | `False`  | `7`     |
-    | `--pattern_height`  | Chessboard pattern height in cm                    | `False`  | `5`     |
+    | Argument            | Description                             | Required | Default        |
+    |---------------------|-----------------------------------------|----------|----------------|
+    | `--debug`           | Let you change the debug output folder  | `False`  | `'./output/'`  |
+    | `--square_size`     | Chessboard squares size in cm           | `False`  | `3`            |
+    | `--pattern_width`   | Chessboard pattern width  cm            | `False`  | `7`            |
+    | `--pattern_height`  | Chessboard pattern height in cm         | `False`  | `5`            |
 
     ```bash
     python Calibration/calibrate.py [--debug <output path>] [--square_size] [--pattern_width] [--pattern_height] [<image mask>]
