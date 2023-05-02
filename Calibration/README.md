@@ -9,7 +9,7 @@ For more information refers to [OpenCV Camera Calibration](https://docs.opencv.o
   ```bash
     python calibrate.py
   ```
-  If necessary of you have a different type of chessboard you can change the following parameters:
+  If necessary (e.g. you have a different type of chessboard) you can change the following parameters:
   
     | Argument            | Description                             | Required | Default        |
     |---------------------|-----------------------------------------|----------|----------------|
@@ -23,6 +23,6 @@ For more information refers to [OpenCV Camera Calibration](https://docs.opencv.o
     ```
     E.g. run with the following command:
     ```bash
-    python Calibration/calibrate.py --debug output --square_size 3 --pattern_width 8 --pattern_height 6 CalibImage/*.jpg
+    python Calibration/calibrate.py --debug output --square_size 3 --pattern_width 7 --pattern_height 5 CalibImage/*.jpg
     ```
 - The script will create a _.json_ and _.yaml_ file contains all the intrinsic parameters of the camera 

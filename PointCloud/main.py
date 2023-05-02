@@ -272,7 +272,7 @@ def main(
             "rotation matrix": rotation_matrix.tolist(),
             "euler angles deg [degree]": np.degrees(euler).tolist()}
     jname = f"Out/Aruco_pose_relative_to_cam_0.json"
-    with open(jname, "w") as f:z
+    with open(jname, "w") as f:
         json.dump(data, f)
 
     # Rotate of 90 degrees around z axis
