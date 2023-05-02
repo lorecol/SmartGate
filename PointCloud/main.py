@@ -3,8 +3,8 @@ import os
 
 import cv2 as cv
 import matplotlib.pyplot as plt
-import numpy as np
 import open3d as o3d
+import json
 
 from PointCloud.src.imgequalization.imgequ import *
 
@@ -34,8 +34,15 @@ def main(
         dataset: int,
         plot: bool
 ) -> None:
+    """
+    Main function that create the point cloud from the depth image
+    :param dataset: dataset number
+    :param plot: if True, plot the images
+    :return: null
+    """
+
     ## DATASET CHOICE
-    print("DATASET CHOICE")
+    print("=============DATASET CHOICE=============")
     # Directory of datasets
     datasets = [CURDIR + "/Datasets/" + DATASETS[0],
                 CURDIR + "/Datasets/" + DATASETS[1]
@@ -51,7 +58,7 @@ def main(
 
     ## EQUALIZE CAM IMAGES
     # https://github.com/torywalker/histogram-equalizer/blob/master/HistogramEqualization.ipynb
-    print("EQUALIZING CAM IMAGES and saving them in /Out/")
+    print("=============EQUALIZING CAM IMAGES and saving them in /Out/=============")
     # Get the list of all png files in current directory
     filelist = os.listdir(mainFolder)
     for file in filelist:
@@ -61,6 +68,7 @@ def main(
 
     for i in range(len(filelist)):
         img = cv.imread(mainFolder + "/" + filelist[i], cv.IMREAD_ANYDEPTH)
+        h, w = img.shape
         img_new = equalizethis(img)
         # Save the equalized images
         cv.imwrite(f"Out/Cam{i}norm.png", img_new)
@@ -71,7 +79,7 @@ def main(
 
     ## POINT CLOUD
     # http://www.open3d.org/docs/release/tutorial/geometry/pointcloud.html
-    print("POINT CLOUD OPERATIONS")
+    print("=============POINT CLOUD OPERATIONS=============")
     # Read point cloud and colouring them
     pcd0 = o3d.io.read_point_cloud(mainFolder + "/" + "004373465147cloud0.ply")
     pcd0.paint_uniform_color([1, 0, 0])
@@ -165,8 +173,35 @@ def main(
 
     ## ARUCO DETECTION
     # https://mecaruco2.readthedocs.io/en/latest/notebooks_rst/Aruco/aruco_basics.html
-    print("ARUCO DETECTION")
+    print("=============ARUCO DETECTION=============")
 
+    # Read cam0 point cloud and colouring them
+    pcd0 = o3d.io.read_point_cloud(mainFolder + "/" + "004373465147cloud0.ply")
+
+    # Extracting points from point cloud
+    all_points = np.asarray(pcd0.points)
+
+    # Initializing the matrix
+    img_matrix = np.zeros((h, w))
+
+    z = 0
+    for i in range(h):
+        for j in range(w):
+            img_matrix[i, j] = all_points[z, 2]
+            z = z + 1
+    if plot:
+        plt.imshow(img_matrix, interpolation='nearest')
+        plt.show()
+
+    # Saving the array in a text file
+    # np.set_printoptions(threshold=np.inf)
+    # file = open("img_matrix.txt", "w+")
+    # np.set_printoptions(threshold=np.inf)
+    # content = str(img_matrix)
+    # file.write(content)
+    # file.close()
+
+    # Detecting the aruco markers from  the normalized image
     frame = cv.imread(CURDIR + "/Out/Cam0norm.png")
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_ARUCO_ORIGINAL)
@@ -174,7 +209,9 @@ def main(
     detector = cv.aruco.ArucoDetector(aruco_dict, parameters)
     corners, ids, rejectedImgPoints = detector.detectMarkers(gray)
     frame_markers = cv.aruco.drawDetectedMarkers(frame.copy(), corners, ids)
+    print(corners)
 
+    # Show the image with the markers
     if plot:
         plt.figure()
         plt.imshow(frame_markers)
@@ -184,20 +221,49 @@ def main(
         plt.legend()
         plt.show()
 
-    # Extrapolating aruco coordinate and useful data
-    corners_all = np.array(c[0] for c in corners)
+    # Extracting the coordinates of the aruco marker
+    aruco_xyz = np.zeros((4, 3))
+    for i in range(4):
+        aruco_xyz[i, 0] = corners[0][0][i][0]
+        aruco_xyz[i, 1] = corners[0][0][i][1]
+        aruco_xyz[i, 2] = img_matrix[int(corners[0][0][i][1]), int(corners[0][0][i][0])]
 
-    corner = corners[0][0][0]
-    x = corner[0]
-    y = corner[1]
-    print(f"First corner coordinates: [{x}, {y}]")
+    print(aruco_xyz)
+    # Find the coordinates of the square's center
+    square_center = np.mean(aruco_xyz, axis=0)
 
-    # Build KDTree from point cloud
-    pcd_tree = o3d.geometry.KDTreeFlann(pcd)
-    [k, idx, _] = pcd_tree.search_knn_vector_3d([x, y, 0], 10)
-    np.asarray(pcd.colors)[idx[1:], :] = [1, 0, 0]
-    o3d.visualization.draw_geometries([pcd, mesh_frame])
-    # http: // www.open3d.org / docs / latest / tutorial / Basic / kdtree.html
+    # define the global reference frame that will coincide with cam 0
+    global_origin = np.array([0, 0, 0])
+    global_x_axis = np.array([1, 0, 0])
+    global_y_axis = np.array([0, 1, 0])
+    global_z_axis = np.array([0, 0, 1])
+
+    # find the translation vector
+    translation_vector = square_center - global_origin
+    print(f"Translation vector: {translation_vector}")
+
+    # Find the rotation matrix
+    x_axis = (aruco_xyz[1] - aruco_xyz[0]) / np.linalg.norm(aruco_xyz[1] - aruco_xyz[0])
+    y_axis = (aruco_xyz[3] - aruco_xyz[0]) / np.linalg.norm(aruco_xyz[3] - aruco_xyz[0])
+    z_axis = np.cross(x_axis, y_axis)
+    rotation_matrix = np.array([x_axis, y_axis, z_axis])
+    print(f"Rotation matrix: {rotation_matrix}")
+
+    # Form the pose matrix
+    pose_matrix = np.eye(4)
+    pose_matrix[:3, :3] = rotation_matrix
+    pose_matrix[:3, 3] = translation_vector
+
+    # Print the results
+    print("Translation vector: \n", translation_vector)
+    print("Rotation matrix: \n", rotation_matrix)
+    print("Pose matrix: \n ", pose_matrix)
+
+    # Saving the relative position into a json file
+    data = {"translation vector": translation_vector.tolist(), "rotation matrix": rotation_matrix.tolist()}
+    jname = f"Out/Aruco_pose_relative_to_cam_0.json"
+    with open(jname, "w") as f:
+        json.dump(data, f)
 
 
 if __name__ == "__main__":
