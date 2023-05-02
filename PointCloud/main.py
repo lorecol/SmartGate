@@ -182,22 +182,28 @@ def main(
     all_points = np.asarray(pcd0.points)
 
     # Initializing the matrix
-    img_matrix = np.zeros((h, w))
+    img_matrix_x = np.zeros((h, w))
+    img_matrix_y = np.zeros((h, w))
+    img_matrix_z = np.zeros((h, w))
+
 
     z = 0
     for i in range(h):
         for j in range(w):
-            img_matrix[i, j] = all_points[z, 2]
+            img_matrix_x[i, j] = all_points[z, 0]
+            img_matrix_y[i, j] = all_points[z, 1]
+            img_matrix_z[i, j] = all_points[z, 2]
             z = z + 1
+    plot = 1
     if plot:
-        plt.imshow(img_matrix, interpolation='nearest')
+        plt.imshow(img_matrix_z, interpolation='nearest')
         plt.show()
-
+    plot =0
     # Saving the array in a text file
     # np.set_printoptions(threshold=np.inf)
-    # file = open("img_matrix.txt", "w+")
+    # file = open("img_matrix_x.txt", "w+")
     # np.set_printoptions(threshold=np.inf)
-    # content = str(img_matrix)
+    # content = str(img_matrix_x)
     # file.write(content)
     # file.close()
 
@@ -209,7 +215,7 @@ def main(
     detector = cv.aruco.ArucoDetector(aruco_dict, parameters)
     corners, ids, rejectedImgPoints = detector.detectMarkers(gray)
     frame_markers = cv.aruco.drawDetectedMarkers(frame.copy(), corners, ids)
-    print(corners)
+    print(f"Detected {len(corners)} aruco markers.")
 
     # Show the image with the markers
     if plot:
@@ -224,11 +230,10 @@ def main(
     # Extracting the coordinates of the aruco marker
     aruco_xyz = np.zeros((4, 3))
     for i in range(4):
-        aruco_xyz[i, 0] = corners[0][0][i][0]
-        aruco_xyz[i, 1] = corners[0][0][i][1]
-        aruco_xyz[i, 2] = img_matrix[int(corners[0][0][i][1]), int(corners[0][0][i][0])]
+        aruco_xyz[i, 0] = img_matrix_x[int(corners[0][0][i][1]), int(corners[0][0][i][0])]
+        aruco_xyz[i, 1] = img_matrix_y[int(corners[0][0][i][1]), int(corners[0][0][i][0])]
+        aruco_xyz[i, 2] = img_matrix_z[int(corners[0][0][i][1]), int(corners[0][0][i][0])]
 
-    print(aruco_xyz)
     # Find the coordinates of the square's center
     square_center = np.mean(aruco_xyz, axis=0)
 
@@ -240,14 +245,12 @@ def main(
 
     # find the translation vector
     translation_vector = square_center - global_origin
-    print(f"Translation vector: {translation_vector}")
 
     # Find the rotation matrix
     x_axis = (aruco_xyz[1] - aruco_xyz[0]) / np.linalg.norm(aruco_xyz[1] - aruco_xyz[0])
     y_axis = (aruco_xyz[3] - aruco_xyz[0]) / np.linalg.norm(aruco_xyz[3] - aruco_xyz[0])
     z_axis = np.cross(x_axis, y_axis)
     rotation_matrix = np.array([x_axis, y_axis, z_axis])
-    print(f"Rotation matrix: {rotation_matrix}")
 
     # Form the pose matrix
     pose_matrix = np.eye(4)
