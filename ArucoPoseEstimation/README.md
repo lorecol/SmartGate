@@ -14,14 +14,14 @@ find the relative position and rotation with respect to a given marker id
     | Argument        | Description                                              | Required | Default |
     |-----------------|----------------------------------------------------------|----------|---------|
     | `--calib-path`  | Calibration path file  e.g. _"calib_data/data.json"_     | `True`   |         |
-    | `--marker-size` | The marker size in cm                                    | `False`  | `5`     |
+    | `--marker-size` | The marker size in cm                                    | `False`  | `8`     |
     | `--img-path`    | The image path to which perform the aruco pose etimation | `True`   |         |
     | `--from-id`     | The id of the first marker to detect                     | `False`  | `555`   |
     | `--to-id`       | The id of the second marker to detect                    | `False`  | `444`   |
     
     E.g. you can run the code with the following command:
     ```bash
-    python ArucoPoseEstimation/main.py --marker-size 5 --calib-path calib_data/data.json  --img-path opencv_frame_0.png --from-id 555 --to-id 444
+    python ArucoPoseEstimation/main.py --marker-size 8 --calib-path calib_data/data.json  --img-path opencv_frame_0.png --from-id 555 --to-id 444
     ```
     The aruco dictionary is already preset to detect the "ORIGINAL ARUCO MARKERS". Therefore, other type can be detected only if the dictionary is changed
   

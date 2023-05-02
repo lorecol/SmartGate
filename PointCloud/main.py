@@ -5,6 +5,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 import open3d as o3d
 import json
+from scipy.spatial.transform import Rotation
 
 from PointCloud.src.imgequalization.imgequ import *
 
@@ -194,11 +195,9 @@ def main(
             img_matrix_y[i, j] = all_points[z, 1]
             img_matrix_z[i, j] = all_points[z, 2]
             z = z + 1
-    plot = 1
     if plot:
         plt.imshow(img_matrix_z, interpolation='nearest')
         plt.show()
-    plot =0
     # Saving the array in a text file
     # np.set_printoptions(threshold=np.inf)
     # file = open("img_matrix_x.txt", "w+")
@@ -251,6 +250,11 @@ def main(
     y_axis = (aruco_xyz[3] - aruco_xyz[0]) / np.linalg.norm(aruco_xyz[3] - aruco_xyz[0])
     z_axis = np.cross(x_axis, y_axis)
     rotation_matrix = np.array([x_axis, y_axis, z_axis])
+    # From rotation matrix to euler angles
+    # create a Rotation object from the rotation matrix
+    r = Rotation.from_matrix(rotation_matrix)
+    # get the Euler angles in radians
+    euler = r.as_euler('xyz')
 
     # Form the pose matrix
     pose_matrix = np.eye(4)
@@ -260,13 +264,42 @@ def main(
     # Print the results
     print("Translation vector: \n", translation_vector)
     print("Rotation matrix: \n", rotation_matrix)
+    print("Euler angles in degrees: \n", np.degrees(euler))
     print("Pose matrix: \n ", pose_matrix)
 
     # Saving the relative position into a json file
-    data = {"translation vector": translation_vector.tolist(), "rotation matrix": rotation_matrix.tolist()}
+    data = {"translation vector [cm]": translation_vector.tolist(),
+            "rotation matrix": rotation_matrix.tolist(),
+            "euler angles deg [degree]": np.degrees(euler).tolist()}
     jname = f"Out/Aruco_pose_relative_to_cam_0.json"
+    with open(jname, "w") as f:z
+        json.dump(data, f)
+
+    # Rotate of 90 degrees around z axis
+    theta_deg = 90
+    theta = np.deg2rad(theta_deg)
+    Rz = np.array([[np.cos(theta), -np.sin(theta), 0],
+                    [np.sin(theta), np.cos(theta), 0],
+                    [0, 0, 1]])
+    translation_vector_rotated = np.dot(Rz, translation_vector)
+    rotation_matrix_rotated = np.dot(rotation_matrix, Rz)
+    print(f"Translation vector after rotation of {theta_deg} degrees: \n", translation_vector_rotated)
+    print(f"Rotation matrix after rotation of {theta_deg} degrees: \n", rotation_matrix_rotated)
+
+    # From rotation matrix to euler angles
+    r = Rotation.from_matrix(rotation_matrix_rotated)
+    # get the Euler angles in radians
+    euler = r.as_euler('xyz')
+    print("Euler angles in degrees of rotated matrix:\n", np.degrees(euler))
+
+    # Saving the relative position into a json file
+    data = {"translation vector [cm]": translation_vector_rotated.tolist(),
+            "rotation matrix ": rotation_matrix_rotated.tolist(),
+            "euler angles deg [degree]": np.degrees(euler).tolist()}
+    jname = f"Out/Aruco_pose_relative_to_cam_0_rotated{theta_deg}.json"
     with open(jname, "w") as f:
         json.dump(data, f)
+
 
 
 if __name__ == "__main__":

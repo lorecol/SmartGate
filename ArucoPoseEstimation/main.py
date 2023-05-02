@@ -93,7 +93,7 @@ def main(
         to_index = np.inf
         # Drawing axes frame
         for ids, corners, i in zip(marker_IDs, marker_corners, total_markers):
-            cv.drawFrameAxes(frame, cam_mat, dist_coef, rvec[i], tvec[i], 1)
+            cv.drawFrameAxes(frame, cam_mat, dist_coef, rvec[i], tvec[i], 3)
             if ids == from_id:
                 from_index = i
             elif ids == to_id:
@@ -105,10 +105,12 @@ def main(
             print("The markers has been found")
 
         # Relative position of marker 2 with respect to marker 1
-        composedRvec, composedTvec = relativePosition(rvec[from_index], tvec[from_index], rvec[to_index],
+        composedRvec, composedTvec = relativePosition(rvec[from_index],
+                                                      tvec[from_index],
+                                                      rvec[to_index],
                                                       tvec[to_index])
-        print(f"composedRvec:\n {composedRvec}\n"
-              f"composedTvec:\n {composedTvec}")
+        print(f"composedRvec [degree]:\n {np.degrees(composedRvec)}\n"
+              f"composedTvec [cm]:\n {composedTvec}")
 
         # Distance of marker 2 from marker 1
         distance = np.sqrt(composedTvec[0, 0] ** 2 + composedTvec[1, 0] ** 2 + composedTvec[2, 0] ** 2)
@@ -116,14 +118,12 @@ def main(
             f"The distance of marker {marker_IDs[to_index, 0]} from marker {marker_IDs[from_index, 0]} is: {distance}cm")
 
         # Saving the relative position into json file
-        data = {"composedRvec": composedRvec.tolist(), "composedTvec": composedTvec.tolist()}
+        data = {"composedRvec [degree]": np.degrees(composedRvec).tolist(), "composedTvec [cm]": composedTvec.tolist()}
         jname = f"output/Marker{marker_IDs[to_index, 0]}_relative_to{marker_IDs[from_index, 0]}.json"
         with open(jname, "w") as f:
             json.dump(data, f)
 
     # Showing the resulting image and exit procedures
-    h, w, _ = frame.shape
-    print(f"h:{h}, w:{w}")
     frame = cv.putText(frame,
                        f"Distance: {round(distance, 2)} cm",
                        (50, 50),
@@ -142,7 +142,7 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--calib-path", required=True, help="The camera calibration path", type=str)
-    parser.add_argument("--marker-size", required=False, help="The marker size [cm]", default=5, type=int)
+    parser.add_argument("--marker-size", required=False, help="The marker size [cm]", default=8, type=int)
     parser.add_argument("--img-path", required=True, help="The image path to which perform the aruco pose", type=str)
     parser.add_argument("--from-id", required=False, help="The 1st marker ", default=555, type=int),
     parser.add_argument("--to-id", required=False, help="The 2nd marker ", default=444, type=int)
@@ -156,4 +156,4 @@ if __name__ == "__main__":
         from_id=args.from_id,
         to_id=args.to_id
     )
-    # --calib-path calib_data/data.json --marker-size 5 --img-path Hololens_calib_photo.jpg --from-id 555 --to-id 444
+    # --calib-path calib_data/data.json --marker-size 8 --img-path Hololens_calib_photo.jpg --from-id 555 --to-id 444
