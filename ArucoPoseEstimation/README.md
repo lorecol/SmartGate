@@ -30,4 +30,19 @@ find the relative position and rotation with respect to a given marker id
 - The code will calculate the distance of the two markers and will save the relative translation and rotation vectors into _"output/"_ directory as a _json_ file
 
 
+## Importing in unity
+In order to import correctly in Unity the relative aruco some coordinate system conversion are needed.
+The aruco target on the pallet has to be a children of the floor-fixed aruco marker.\
+Doing so, the pallet coordinate system is reffered to the floor-fixed aruco marker.
+- Translation from OpenCV to Unity:
+  - x &rarr; x
+  - y &rarr; z
+  - z &rarr; y
+- Rotation from OpenCV to Unity:
+  - x &rarr; -x
+  - y &rarr; z
+  - z &rarr; y
+
+
+
     
