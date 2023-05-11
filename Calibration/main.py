@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-calibrate.py
+main.py
 This script is adapted from OpenCV.
 Changes include parsing more parameters, and formatting the json and yaml saving of calibration results.
 Revision by Long Qian
@@ -9,7 +9,7 @@ Contact: lqian8@jhu.edu
 camera calibration for distorted images with chess board samples
 reads distorted images, calculates the calibration and write undistorted images
 usage:
-    calibrate.py [--debug <output path>] [--square_size] [--pattern_width] [--pattern_height] [<image mask>]
+    main.py [--debug <output path>] [--square_size] [--pattern_width] [--pattern_height] [<image mask>]
 default values:
     --debug:    ./output/
     --square_size: 3.0
@@ -17,8 +17,9 @@ default values:
     --pattern_height: 5
     <image mask> defaults to data/*.jpg
 '''
-# E.g. run with --debug ./output/ --square_size 0.03 --pattern_width 18 --pattern_height 24 CalibImage/*.jpg
-# Python 2/3 compatibility
+# run with
+# python main.py --debug ./output/ --square_size 3.0 --pattern_width 7 --pattern_height 5 CalibImage/*.jpg
+
 from __future__ import print_function
 
 import json
@@ -30,7 +31,7 @@ import cv2
 import numpy as np
 
 # local modules
-from common import splitfn
+from Calibration.src.common.common import splitfn
 
 if __name__ == '__main__':
     import sys
@@ -108,14 +109,14 @@ if __name__ == '__main__':
     print("distortion coefficients: ", dist_coefs.ravel())
 
     data = {"camera_matrix": camera_matrix.tolist(), "dist_coeff": dist_coefs.tolist(), "height": h, "width": w}
-    yname = "data.yaml"
+    yname = "output/data.yaml"
     with open(yname, "w") as f:
         yaml.dump(data, f)
-    jname = "data.json"
+    jname = "output/data.json"
     with open(jname, "w") as f:
         json.dump(data, f)
 
-    # undistort the image with the calibration
+    # undistorted the image with the calibration
     print('')
     for img_found in img_names_undistort:
         img = cv2.imread(img_found)

@@ -20,7 +20,7 @@ def display_inlier_outlier(cloud, ind):
 
     :param cloud: point cloud data
     :param ind: point cloud indexes
-    :return: null, it
+    :return: null
     """
     inlier_cloud = cloud.select_by_index(ind)
     outlier_cloud = cloud.select_by_index(ind, invert=True)
@@ -59,7 +59,7 @@ def main(
 
     ## EQUALIZE CAM IMAGES
     # https://github.com/torywalker/histogram-equalizer/blob/master/HistogramEqualization.ipynb
-    print("=============EQUALIZING CAM IMAGES and saving them in /Out/=============")
+    print("=============EQUALIZING CAM IMAGES and saving them in /output/=============")
     # Get the list of all png files in current directory
     filelist = os.listdir(mainFolder)
     for file in filelist:
@@ -72,7 +72,7 @@ def main(
         h, w = img.shape
         img_new = equalizethis(img)
         # Save the equalized images
-        cv.imwrite(f"Out/Cam{i}norm.png", img_new)
+        cv.imwrite(f"output/Cam{i}norm.png", img_new)
         if plot:
             cv.imshow("img_norm", img_new)
             cv.waitKey()
@@ -168,7 +168,7 @@ def main(
     # extract the point cloud of the current cluster
     pcd = pcd.select_by_index(indexes)
     # Save the final point cloud
-    o3d.io.write_point_cloud("Out/out.ply", pcd)
+    o3d.io.write_point_cloud("output/out.ply", pcd)
     # Visualize the point cloud
     if plot: o3d.visualization.draw_geometries([pcd, mesh_frame])
 
@@ -187,7 +187,7 @@ def main(
     img_matrix_y = np.zeros((h, w))
     img_matrix_z = np.zeros((h, w))
 
-
+    # Filling the matrix with the points
     z = 0
     for i in range(h):
         for j in range(w):
@@ -197,6 +197,7 @@ def main(
             z = z + 1
     if plot:
         plt.imshow(img_matrix_z, interpolation='nearest')
+        plt.title('depth image from point cloud')
         plt.show()
     # Saving the array in a text file
     # np.set_printoptions(threshold=np.inf)
@@ -207,7 +208,7 @@ def main(
     # file.close()
 
     # Detecting the aruco markers from  the normalized image
-    frame = cv.imread(CURDIR + "/Out/Cam0norm.png")
+    frame = cv.imread(CURDIR + "/output/Cam0norm.png")
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_ARUCO_ORIGINAL)
     parameters = cv.aruco.DetectorParameters()
@@ -268,10 +269,10 @@ def main(
     print("Pose matrix: \n ", pose_matrix)
 
     # Saving the relative position into a json file
-    data = {"translation vector [cm]": translation_vector.tolist(),
+    data = {"translation vector [m]": translation_vector.tolist(),
             "rotation matrix": rotation_matrix.tolist(),
             "euler angles deg [degree]": np.degrees(euler).tolist()}
-    jname = f"Out/Aruco_pose_relative_to_cam_0.json"
+    jname = f"output/Aruco_pose_relative_to_cam_0.json"
     with open(jname, "w") as f:
         json.dump(data, f)
 
@@ -293,16 +294,17 @@ def main(
     print("Euler angles in degrees of rotated matrix:\n", np.degrees(euler))
 
     # Saving the relative position into a json file
-    data = {"translation vector [cm]": translation_vector_rotated.tolist(),
+    data = {"translation vector [m]": translation_vector_rotated.tolist(),
             "rotation matrix ": rotation_matrix_rotated.tolist(),
             "euler angles deg [degree]": np.degrees(euler).tolist()}
-    jname = f"Out/Aruco_pose_relative_to_cam_0_rotated{theta_deg}.json"
+    jname = f"output/Aruco_pose_relative_to_cam_0_rotated{theta_deg}.json"
     with open(jname, "w") as f:
         json.dump(data, f)
 
 
 
 if __name__ == "__main__":
+    # Parse arguments
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--dataset", required=True, help="The dataset to choose from", type=int)
@@ -310,9 +312,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # Call the main function
     main(
         dataset=args.dataset,
         plot=args.p
     )
-
-    # python main.py --dataset 1 -p
+    # You can execute the script from the terminal with the following command:
+    # python main.py --dataset 0 -p

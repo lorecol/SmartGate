@@ -11,7 +11,7 @@ Summarizing what the code does:
 - Remove planes such ground and walls
 - Perform a clustering leading to the final pallet point cloud 
 
-![](Out/final_plc.png)
+![](output/final_plc.png)
 ## How to use
 
 To run the code move the terminal in _SmartGate/PointCloud_ with _cd_ command. \

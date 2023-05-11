@@ -6,6 +6,12 @@ import numpy as np
 
 
 def inversePerspective(rvec, tvec):
+    """
+    Inverse the perspective of a marker.
+    :param rvec: rotation vector of the marker
+    :param tvec: translation vector of the marker
+    :return: inverse rotation vector and inverse translation vector
+    """
     R, _ = cv.Rodrigues(rvec)
     R = np.matrix(R).T
     invTvec = np.dot(R, np.matrix(-tvec))
@@ -13,7 +19,7 @@ def inversePerspective(rvec, tvec):
     return invRvec, invTvec
 
 
-def relativePosition(rvec1, tvec1, rvec2, tvec2):
+def calulate_relative_vectors(rvec1, tvec1, rvec2, tvec2):
     """
     Get relative position for rvec2 & tvec2.
     :param rvec1: rotation vector of marker 1
@@ -41,6 +47,7 @@ def main(
         to_id: int
 ) -> None:
     """
+    Main function to perform the aruco pose estimation
     :param calib_data_path:  Calibration data path
     :param marker_size:  Markers size [cm]
     :param image: Image path to which perform the aruco pose
@@ -89,6 +96,7 @@ def main(
             nada.append(n)
         total_markers = range(0, marker_IDs.size)
 
+        # Initialize indexes
         from_index = np.inf
         to_index = np.inf
         # Drawing axes frame
@@ -102,23 +110,20 @@ def main(
         if from_index == np.inf or to_index == np.inf:
             TypeError(f"The two markers has not been found!! Check id and dictionary")
         else:
-            print("The markers has been found")
+            print("The two markers has been found")
 
         # Relative position of marker 2 with respect to marker 1
-        composedRvec, composedTvec = relativePosition(rvec[from_index],
-                                                      tvec[from_index],
-                                                      rvec[to_index],
-                                                      tvec[to_index])
+        composedRvec, composedTvec = calulate_relative_vectors(rvec[to_index], tvec[to_index], rvec[from_index],
+                                                               tvec[from_index])
         print(f"composedRvec [degree]:\n {np.degrees(composedRvec)}\n"
-              f"composedTvec [cm]:\n {composedTvec}")
+              f"composedTvec [m]:\n {composedTvec*0.01}")
 
         # Distance of marker 2 from marker 1
         distance = np.sqrt(composedTvec[0, 0] ** 2 + composedTvec[1, 0] ** 2 + composedTvec[2, 0] ** 2)
-        print(
-            f"The distance of marker {marker_IDs[to_index, 0]} from marker {marker_IDs[from_index, 0]} is: {distance}cm")
+        print(f"The distance of marker {marker_IDs[to_index, 0]} from marker {marker_IDs[from_index, 0]} is: {distance}cm")
 
         # Saving the relative position into json file
-        data = {"composedRvec [degree]": np.degrees(composedRvec).tolist(), "composedTvec [cm]": composedTvec.tolist()}
+        data = {"composedRvec [degree]": np.degrees(composedRvec).tolist(), "composedTvec [m]": (composedTvec*0.01).tolist()}
         jname = f"output/Marker{marker_IDs[to_index, 0]}_relative_to{marker_IDs[from_index, 0]}.json"
         with open(jname, "w") as f:
             json.dump(data, f)
@@ -140,6 +145,7 @@ def main(
 
 
 if __name__ == "__main__":
+    # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--calib-path", required=True, help="The camera calibration path", type=str)
     parser.add_argument("--marker-size", required=False, help="The marker size [cm]", default=8, type=int)
@@ -149,6 +155,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # Call main function
     main(
         calib_data_path=args.calib_path,
         marker_size=args.marker_size,
@@ -156,4 +163,4 @@ if __name__ == "__main__":
         from_id=args.from_id,
         to_id=args.to_id
     )
-    # --calib-path calib_data/data.json --marker-size 8 --img-path Hololens_calib_photo.jpg --from-id 555 --to-id 444
+    # python3 aruco_pose.py --calib-path calib_data/data.json --marker-size 8 --img-path Hololens_calib_photo.jpg --from-id 555 --to-id 444
