@@ -3,7 +3,8 @@ This folder contains all the useful python code to manage point cloud.
 Is principally based on the package [Open3D package](http://www.open3d.org/docs/release/index.html).\
 Summarizing what the code does:
 - Load the point cloud and the image from a given dataset of point cloud each one composed of three point cloud from
-3 tof camera
+3 tof camera placed in a triangular shape
+  <img src="CameraPosition.png" width="60%">
 - Equalize the image
 - Perform a downsampling process
 - Make a single combined point cloud through the transformation matrices of the cameras
@@ -11,7 +12,8 @@ Summarizing what the code does:
 - Remove planes such ground and walls
 - Perform a clustering leading to the final pallet point cloud 
 
-![](output/final_plc.png)
+<img src="output/final_plc.png" width="70%">
+
 ## How to use
 
 To run the code move the terminal in _SmartGate/PointCloud_ with _cd_ command. \
@@ -38,5 +40,3 @@ of the aruco as the origin of the coordinate system of the pallet:
     - x &rarr; +90
     - y &rarr; 0
     - z &rarr; 90
-
-- 

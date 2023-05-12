@@ -42,4 +42,7 @@ python -m venv venv
 pip install -r requirements.txt 
 ```
 
-6. Follow the README file of [PointCloud](PointCloud/README.md) or [ArucoPoseEstimation](ArucoPoseEstimation/README.md) or [Calibration](Calibration/README.md)
+6. Follow the README file of:
+   - [PointCloud](PointCloud/README.md) to elaborate the point cloud taken from the 3 ToF camera (Sick visionary-T mini) and find the pose of the aruco on the pallet relative to CAM 0
+   - [ArucoPoseEstimation](ArucoPoseEstimation/README.md) To estimate the pose between the aruco placed on the floor and the one placed on the pallet
+   - [Calibration](Calibration/README.md) to calibrate the camera (Hololens 2)
