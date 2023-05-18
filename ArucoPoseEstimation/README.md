@@ -1,9 +1,9 @@
 # ARUCO POSE ESTIMATION
-This folder contain all the useful code to perform an aruco pose estimation
-is principally based on the OpenCV official guide for [Aruco detection](https://docs.opencv.org/4.7.0/d5/dae/tutorial_aruco_detection.html)
+This folder contains all the useful code to perform an aruco pose estimation.\
+Is principally based on the OpenCV official guide for [Aruco detection](https://docs.opencv.org/4.7.0/d5/dae/tutorial_aruco_detection.html)
 
-It tries to find the pose of at least two aruco markers ids specified by the user and 
-find the relative position and rotation with respect to a given marker id
+It tries to find the pose of at least two aruco markers IDs specified by the user and 
+find the relative position and rotation with respect to a given marker ID
 
 
 ## How to use:
