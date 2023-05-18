@@ -2,8 +2,9 @@
 This folder contains all the useful python code to manage point cloud. 
 Is principally based on the package [Open3D package](http://www.open3d.org/docs/release/index.html).\
 Summarizing what the code does:
-- Load the point cloud and the image from a given dataset of point cloud each one composed of three point cloud from
+- Load the point clouds and the images from a given dataset of point clouds each one composed of three point clouds from
 3 tof camera placed in a triangular shape
+
   <img src="CameraPosition.png" width="60%">
 - Equalize the image
 - Perform a downsampling process
