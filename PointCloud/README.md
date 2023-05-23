@@ -34,9 +34,9 @@ python main.py --dataset 1 -p
 After having imported the ply file in Unity, the following changes of coordinate are needed, in order to make the center
 of the aruco as the origin of the coordinate system of the pallet:
 - Translation from OpenCV to Unity:
-  - x &rarr; -z
-  - y &rarr; x
-  - z &rarr; y
+  - x &rarr; y
+  - y &rarr; z
+  - z &rarr; -x
 - Rotation from OpenCV to Unity:
     - x &rarr; +90
     - y &rarr; 0
