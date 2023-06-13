@@ -21,6 +21,10 @@ To check if python is successfully installed open a terminal window and run:
 ```bash
 python --version
 ```
+or
+```bash
+python3 --version
+```
 
 A useful python editor for windows are [PyCharm](https://www.jetbrains.com/pycharm/download/#section=windows) or 
 [VScode](https://code.visualstudio.com/) but you can continue also without installing it.
