@@ -34,6 +34,10 @@ Inside the cloned repository directory "_../SmartGate/_" open a terminal window 
 ```bash
 python -m venv venv 
 ```
+or
+```bash
+python3 -m venv venv
+```
 
 4. Activate virtual environment:\
 
