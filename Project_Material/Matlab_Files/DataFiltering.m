@@ -17,20 +17,27 @@ points2rt = transpose(points2rt);
 PtCloudFilt = select(remainPtCloud, IndexPtCluster(1).Indexes);
 
 % Rotate the point cloud in the original configuration
-rotationAngles = [-90 90 0];
+% rotationAngles = [-90 90 0];
+% translation = [0 0 0];
+% tform = rigidtform3d(rotationAngles, translation);
+% PtCloudFilt = pctransform(PtCloudFilt, tform);
+rotationAngles = [0 0 90];
 translation = [0 0 0];
 tform = rigidtform3d(rotationAngles, translation);
 PtCloudFilt = pctransform(PtCloudFilt, tform);
 
 % Remaining point cloud after having canceled unwanted portions
 cameratoolbar
-draw3dReferenceSystems()
 figure, clf, hold on, grid on, axis equal
+draw3dReferenceSystems()
 pcshow(PtCloudFilt)
 axis on
 xlabel('X');
 ylabel('Y');
 zlabel('Z');
-title("Filtered points from the cloud points")
+title("\color{black}Filtered points from the cloud points")
+set(gcf, 'color', 'w');
+set(gca, 'color', 'w');
+set(gca, 'XColor', [0.15 0.15 0.15], 'YColor', [0.15 0.15 0.15], 'ZColor', [0.15 0.15 0.15])
 
 end

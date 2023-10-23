@@ -1,8 +1,8 @@
 %% INITIALIZATION
 
-clc
-clear all
-close all
+clc;
+clear all;
+close all;
 
 % There is a script that allows the user to choose which of the 2 provided 
 % dataset to evaluate.
@@ -11,6 +11,10 @@ close all
 % graphical way, and finally they are filtered.
 % Furthermore, it is possible to calibrate the camera with images taken
 % with the camera itself
+
+cd('\\wsl.localhost\Ubuntu-20.04\home\lorenzocoltu\SmartGate');
+
+%%
 
 addpath(genpath(pwd))
 
@@ -27,7 +31,7 @@ fileinfo = EqualizeCamImage(mainFolder);
 
 %% DATA FILTERING
 
-% PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
+PtCloudFilt = DataFiltering(points0rt, points1rt, points2rt);
 
 % Save the filtered point cloud into a binary encoded ply file
 pcwrite(PtCloudFilt, "Project_Material/Filtered_PointCloud/Filtered_Point_Cloud.ply", ...
