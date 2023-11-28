@@ -1,8 +1,0 @@
-CAM0 = FRONTAL CAMERA
-CAM1 = LATERAL LEFT CAMERA
-CAM2 = LATERAL RIGHT CAMERA
-
-H0,H1,H2 = ROTOTRASLATION MATRIX OF EACH CAMERA 
-
-You can Use ARUCO 444 seen by the frontal camera to refer all to it
-TO USE THE .png IMAGE YOU HAVE TO EQUALIZE THEM (see how to do in Main.m)
